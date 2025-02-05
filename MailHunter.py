@@ -5,6 +5,16 @@ import json
 import csv
 import docx
 
+import pyfiglet
+
+def display_thumbnail():
+    logo = pyfiglet.figlet_format("MailHunter")
+    print(logo)
+
+# Call this function at the start of your script
+display_thumbnail()
+
+
 # Function to extract emails from text
 def extract_emails(text):
     return re.findall(r"[._+a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+", text)
