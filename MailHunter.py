@@ -2,7 +2,7 @@ import os
 import pdfplumber
 import re
 import json
-import csvgit 
+import csv
 import docx
 
 # Function to extract emails from text
