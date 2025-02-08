@@ -4,22 +4,21 @@ import re
 import json
 import csv
 import docx
-
 import pyfiglet
+import multiprocessing
 
+# Improved regex pattern for better email extraction
+def extract_emails(text):
+    return re.findall(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", text)
+
+# Function to display ASCII banner
 def display_thumbnail():
     logo = pyfiglet.figlet_format("MailHunter")
     print(logo)
 
-# Call this function at the start of your script
 display_thumbnail()
 
-
-# Function to extract emails from text
-def extract_emails(text):
-    return re.findall(r"[._+a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+", text)
-
-# Function to process PDF files
+# File processing functions
 def extract_from_pdf(file_path):
     emails = []
     try:
@@ -32,7 +31,6 @@ def extract_from_pdf(file_path):
         print(f"Error processing PDF {file_path}: {e}")
     return list(set(emails))
 
-# Function to process DOCX files
 def extract_from_docx(file_path):
     emails = []
     try:
@@ -43,7 +41,6 @@ def extract_from_docx(file_path):
         print(f"Error processing DOCX {file_path}: {e}")
     return list(set(emails))
 
-# Function to process TXT files
 def extract_from_txt(file_path):
     emails = []
     try:
@@ -54,7 +51,6 @@ def extract_from_txt(file_path):
         print(f"Error processing TXT {file_path}: {e}")
     return list(set(emails))
 
-# Function to process CSV files
 def extract_from_csv(file_path):
     emails = []
     try:
@@ -67,25 +63,32 @@ def extract_from_csv(file_path):
         print(f"Error processing CSV {file_path}: {e}")
     return list(set(emails))
 
-# Function to scan selected file type
+def process_file(args):
+    file_path, extraction_function = args
+    extracted_emails = extraction_function(file_path)
+    return file_path, extracted_emails if extracted_emails else ["-"]
+
+# Function to scan selected file type using multiprocessing
 def scan_files(rootdir, extension, extraction_function):
     email_addresses = {}
-    counter = 0
+    file_list = []
 
     for subdir, _, files in os.walk(rootdir):
         for file in files:
-            if not file.lower().endswith(extension):
-                continue
-
-            counter += 1
-            full_file_path = os.path.join(subdir, file)
-            extracted_emails = extraction_function(full_file_path)
-
-            email_addresses[file] = extracted_emails if extracted_emails else ["-"]
-
+            if file.lower().endswith(extension):
+                file_list.append((os.path.join(subdir, file), extraction_function))
+    
+    counter = len(file_list)
+    
+    with multiprocessing.Pool() as pool:
+        results = pool.map(process_file, file_list)
+        
+    for file_name, emails in results:
+        email_addresses[os.path.basename(file_name)] = emails
+    
     return email_addresses, counter
 
-# Main menu for file type selection
+# Main function
 def main():
     rootdir = input("Enter the folder path to scrape emails from: ").strip()
     
