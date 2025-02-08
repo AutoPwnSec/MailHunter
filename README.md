@@ -35,7 +35,7 @@ pip install pdfplumber python-docx pyfiglet
 📌 Usage
 Run the script and follow the prompts:
 ```sh
-python mailhunter.py
+python MailHunter.py
 ```
 
 ### 📂 Output Files
