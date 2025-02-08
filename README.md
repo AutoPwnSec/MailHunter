@@ -1,6 +1,6 @@
 # MailHunter 🏹 – Extract Emails from Any File Type  
 
-![alt text](MailHunter.webp)
+<img src="MailHunter.webp" alt="MailHunter Logo" width="400">
 
 **MailHunter** is a powerful and efficient email scraping tool that hunts and extracts email addresses from various file types, including **PDF, DOCX, CSV, and TXT**. It allows users to **select a directory**, choose a file format, and extract all email addresses from the files within seconds.  
                             
